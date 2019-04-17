@@ -125,11 +125,11 @@ class Teeko:
                 if p[i][j]==t:
                     if i<2 and p[i+1][j]==t and p[i+2][j]==t and p[i+3][j]==t:
                         self.afficheGagnant()
-                    elif i<2 and  j<2 and p[i+1][j+1]==t and p[i+2][j+2]==t and p[i+3][j+3]:
+                    elif i<2 and  j<2 and p[i+1][j+1]==t and p[i+2][j+2]==t and p[i+3][j+3]==t:
                         self.afficheGagnant()
                     elif j<2 and p[i][j+1]==t and p[i][j+2]==t and p[i][j+3]==t:
                         self.afficheGagnant()
-                    elif j<2 and i>2 and p[i-1][j+1]==t and p[i-2][j+2]==t and p[i-3][j+3]:
+                    elif j<2 and i>2 and p[i-1][j+1]==t and p[i-2][j+2]==t and p[i-3][j+3]==t:
                         self.afficheGagnant()
                     elif i<4 and j<4 and p[i+1][j]==t and p[i+1][j+1]==t and p[i][j+1]==t:
                         self.afficheGagnant()
