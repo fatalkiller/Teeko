@@ -73,5 +73,5 @@ class Controleur:
     def creationBarreMenu(self):
         menubar = Menu(self.root)
         self.root.config(menu=menubar)
-        menubar.add_command(label="Menu", command=self.relanceMenu)
+        menubar.add_command(label="Rejouer", command=self.relanceMenu)
 
