@@ -2,9 +2,13 @@
 from VueJeu import *
 from Model import *
 from random import randint
-from MinMax import minMax
+import MinMax
+import AlphaBeta
 
+# Profondeur maximale de recherche de minMax
 pMax = 4
+# Elagage Alpha-Beta
+elagage = True
 
 class Controleur:
     """ Classe qui gère le passage du menu au jeu et qui gère les différentes actions (clic)
@@ -52,7 +56,10 @@ class Controleur:
                 if x < 5 and y < 5:
                     if self.model.action(x, y):
                         if self.model.tour == self.model.joueur1 == 1 or (self.model.tour == 2 and self.model.joueur2 == 1):
-                            minMax(self.model, pMax)
+                            if elagage:
+                                AlphaBeta.minMax(self.model, pMax)
+                            else:
+                                MinMax.minMax(self.model, pMax)
 
                         self.vueJeu.affichage()
 
@@ -65,7 +72,10 @@ class Controleur:
         self.model.posePion(x, y)
         while not self.model.gagnant:
             self.vueJeu.affichage()
-            minMax(self.model, pMax)
+            if elagage:
+                AlphaBeta.minMax(self.model, pMax)
+            else:
+                MinMax.minMax(self.model, pMax)
 
     def afficheGagnant(self):
         self.fenetre_gagnant = Tk()
