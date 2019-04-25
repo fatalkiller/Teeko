@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class Model:
     """ Classe principal du jeu
     - plateau : int[][]
@@ -28,19 +30,12 @@ class Model:
         self.IAenCours = False
 
     def changeTour(self):
-        if self.IAenCours or not self.verifGagnant():
+        self.verifGagnant()
+        if self.IAenCours or not self.gagnant:
             if self.tour == 1:
                 self.tour = 2
-                if self.joueur2 == 1 and not self.IAenCours:
-                    self.IAenCours = True
-                    self.minMaxPoseOuDeplace(0)
             else:
                 self.tour = 1
-                if self.joueur1 == 1 and not self.IAenCours:
-                    self.IAenCours = True
-                    self.minMaxPoseOuDeplace(0)
-        else:
-            self.gagnant = True
 
     def posePion(self, x, y):
         if self.plateau[x][y] == 0:
@@ -86,7 +81,7 @@ class Model:
             self.plateau[x][y] = self.tour
             self.plateau[self.pion[0]][self.pion[1]] = 0
             self.supprimeDeplacement()
-            self.pion = [-1,-1]
+            self.pion = [-1, -1]
             self.IAenCours = False
             self.changeTour()
             return True
@@ -99,23 +94,23 @@ class Model:
             for i in range(5):
                 if p[i][j] == t:
                     if i < 2 and p[i+1][j] == p[i+2][j] == p[i+3][j] == t:
-                        return True
-                    elif i < 2 and  j < 2 and p[i+1][j+1] == p[i+2][j+2] == p[i+3][j+3] == t:
-                        return True
+                        self.gagnant = True
+                    elif i < 2 and j < 2 and p[i+1][j+1] == p[i+2][j+2] == p[i+3][j+3] == t:
+                        self.gagnant = True
                     elif j < 2 and p[i][j+1] == p[i][j+2] == p[i][j+3] == t:
-                        return True
-                    elif j < 2 and i > 2 and p[i-1][j+1] == p[i-2][j+2] == p[i-3][j+3] == t:
-                        return True
+                        self.gagnant = True
+                    elif j < 2 < i and p[i - 1][j + 1] == p[i - 2][j + 2] == p[i - 3][j + 3] == t:
+                        self.gagnant = True
                     elif i < 4 and j < 4 and p[i+1][j] == p[i+1][j+1] == p[i][j+1] == t:
-                        return True
-                    return False
+                        self.gagnant = True
+                    return
 
     def getCaseValue(self, x, y):
         return self.plateau[x][y]
 
     def action(self, x, y):
-        if self.pose :
-            return self.posePion(x,y)
+        if self.pose:
+            return self.posePion(x, y)
         elif self.addMouvementPossible(x, y):
             return True
         elif self.pion != [-1, -1]:
@@ -134,97 +129,217 @@ class Model:
     def getGagnant(self):
         return self.gagnant
 
-    def minMaxPoseOuDeplace(self, profondeur):
-        # change le tour (pas au lancement)
-        if profondeur != 0:
-            self.changeTour()
-        # on vérifie si le coup est gagnant ou si on est arrivé à la profondeur voulu
-        # --> on évalue le plateau à ce moment
-        val = 0
+    def eval(self):
+        return 0
+
+    def minPose(self, p):
+        # Teste si on doit poser ou déplacer un pion
+        if self.pose == 0:
+            return self.minDeplace(p)
+
+        # Vérif noeud terminal
         if self.gagnant:
             self.gagnant = False
-            if profondeur%2 == 0:
-                val = -100 + 5 * profondeur
-            else:
-                val = 100 - 5 * profondeur
-        elif profondeur == 4:
-            val = self.evaluation(profondeur)
-        elif self.pose > 0:
-            self.pose -= 1
-            val = self.minMaxPose(profondeur)
-            self.pose += 1
-        else:
-            val = self.minMaxDeplace(profondeur)
-        if profondeur != 0:
-            self.changeTour()
+            return 100 + p
+        if p == 0:
+            return self.eval()
+
+        # Init v pour un min
+        v = 1000
+
+        # Parcoure du tableau de jeu
+        for i in range(5):
+            for j in range(5):
+                # Test si plateau[j][i] déjà pris
+                # On pose le pion à l'endroit souhaité
+                if self.posePion(j, i):
+                    val = self.maxPose(p-1)
+
+                    # p impair, alors on fait un min
+                    v = min(v, val)
+
+                    # On annule le coup effectué
+                    self.plateau[j][i] = 0
+                    self.changeTour()
+                    self.pose += 1
+        return v
+
+    def maxPose(self, p):
+        # Teste si on doit poser ou déplacer un pion
+        if self.pose == 0:
+            return self.maxDeplace(p)
+
+        # Vérif noeud terminal
+        if self.gagnant:
             self.gagnant = False
-        return val
+            return -100 - p
+        if p == 0:
+            return self.eval()
 
-    def minMaxPose(self, profondeur):
-        # initialisation
-        p = self.plateau
-        t = self.tour
+        # Init v pour un max
+        v = -1000
+
+        # Parcoure du tableau de jeu
+        for i in range(5):
+            for j in range(5):
+                # Test si plateau[j][i] déjà pris
+                # On pose le pion à l'endroit souhaité
+                if self.posePion(j, i):
+                    val = self.minPose(p - 1)
+
+                    # p pair, alors on fait un max
+                    v = max(v, val)
+
+                    # On annule le coup effectué
+                    self.plateau[j][i] = 0
+                    self.changeTour()
+                    self.pose += 1
+        return v
+
+    def minDeplace(self, p):
+        # Vérif noeud terminal
+        if self.gagnant:
+            self.gagnant = False
+            return 100 + p
+        if p == 0:
+            return self.eval()
+
+        # Init v pour un min
+        v = 1000
+
+        # Parcoure du tableau de jeu
+        for i in range(5):
+            for j in range(5):
+                # Teste si la position courante est occupée
+                if self.plateau[j][i] == self.tour:
+                    moves = self.mouvementPossible(j, i)
+
+                    # On parcoure les mouvements possibles
+                    for m in moves:
+                        # On déplace le pion
+                        self.plateau[m[0]][m[1]] = self.tour
+                        # On enlève le pion à l'emplacement précédent
+                        self.plateau[j][i] = 0
+                        self.changeTour()
+
+                        val = self.maxDeplace(p-1)
+
+                        # p impair, alors on fait un min
+                        v = min(v, val)
+
+                        # On annule le coup effectué
+                        self.changeTour()
+                        self.plateau[m[0]][m[1]] = 0
+                        self.plateau[j][i] = self.tour
+        return v
+
+    def maxDeplace(self, p):
+        # Vérif noeud terminal
+        if self.gagnant:
+            self.gagnant = False
+            return -100 - p
+        if p == 0:
+            return self.eval()
+
+        # Init v pour un max
+        v = -1000
+
+        # Parcoure du tableau de jeu
+        for i in range(5):
+            for j in range(5):
+                # Teste si la position courante est occupée
+                if self.plateau[j][i] == self.tour:
+                    moves = self.mouvementPossible(j, i)
+
+                    # On parcoure les mouvements possibles
+                    for m in moves:
+                        # On déplace le pion
+                        self.plateau[m[0]][m[1]] = self.tour
+                        # On enlève le pion à l'emplacement précédent
+                        self.plateau[j][i] = 0
+                        self.changeTour()
+
+                        val = self.minDeplace(p-1)
+
+                        # p pair, alors on fait un max
+                        v = max(v, val)
+
+                        # On annule le coup effectué
+                        self.changeTour()
+                        self.plateau[m[0]][m[1]] = 0
+                        self.plateau[j][i] = self.tour
+        return v
+
+    def minMaxPose(self, p):
+        # Init du coup retourné
         coup = []
-        # on initialise a -1000 quand on cherche le coup max et 1000 quand on cherche le coup min
-        val = -1000
-        if profondeur%2 == 1:
-            val = 1000
-        # boucle permettant de savoir le meilleur coup
-        for j in range(5) :
-            for i in range(5):
-                if p[i][j] == 0:
-                    # on pose le pion
-                    p[i][j] = t
-                    vald = self.minMaxPoseOuDeplace(profondeur+1)
-                    # on compare la valeur du déplacement avec celle stocké
-                    # si la valeur est supérieur (max) ou inférieur (min)
-                    # on sauvegarde la valeur du coup actuel ainsi que le coup et pion actuel
-                    if (profondeur%2 == 0 and vald > val) or (profondeur%2 == 1 and vald < val):
-                        val = vald
-                        coup = [i, j]
-                    # on enlève le pion
-                    p[i][j] = 0
-        # effectue le meilleur déplacement possible à la fin de l'execution complète (seulement à profondeur 0)
-        if profondeur == 0:
-            self.IAenCours = False
-            self.posePion(coup[0], coup[1])
-        return val
 
-    def minMaxDeplace(self, profondeur):
-        # initialisation
-        p = self.plateau
-        t = self.tour
+        # Init v pour un max
+        v = -1000
+
+        # Parcoure du tableau de jeu
+        for i in range(5):
+            for j in range(5):
+                # Test si plateau[j][i] déjà pris
+                # On pose le pion à l'endroit souhaité
+                if self.posePion(j, i):
+                    val = self.minPose(p-1)
+
+                    # p pair, alors on fait un max
+                    if v < val:
+                        v = val
+                        coup = [j, i]
+
+                    # On annule le coup effectué
+                    self.plateau[j][i] = 0
+                    self.changeTour()
+                    self.pose += 1
+
+        # On pose le pion au meilleur emplacement
+        self.posePion(coup[0], coup[1])
+
+    def minMaxDeplace(self, p):
+        # Init du coup retourné
         coup = []
-        pion = []
-        # on initialise a -1000 quand on cherche le coup max et 1000 quand on cherche le coup min
-        val = -1000
-        if profondeur%2 == 1:
-            val = 1000
-        # boucle permettant de savoir le meilleur coup
-        for j in range(5) :
-            for i in range(5):
-                if p[i][j] == t:
-                    deplacements = self.mouvementPossible(i, j)
-                    for d in deplacements:
-                        # on effectue le deplacement
-                        p[i][j] = 0
-                        p[d[0]][d[1]] = t
-                        vald = self.minMaxPoseOuDeplace(profondeur+1)
-                        # on compare la valeur du déplacement avec celle stocké
-                        # si la valeur est supérieur (max) ou inférieur (min)
-                        # on sauvegarde la valeur du coup actuel ainsi que le coup et pion actuel
-                        if (profondeur%2 == 0 and vald > val) or (profondeur%2 == 1 and vald < val):
-                            pion = [i, j]
-                            val = vald
-                            coup = d
-                        # on annule le déplacement
-                        p[i][j] = t
-                        p[d[0]][d[1]] = 0
-        # effectue le meilleur déplacement possible à la fin de l'execution complète (seulement à profondeur 0)
-        if profondeur == 0:
-            self.pion = pion
-            self.deplacePion(coup[0], coup[1])
-        return val
 
-    def evaluation(self, profondeur):
-        return 0
+        # Init v pour un max
+        v = -1000
+
+        # Parcoure du tableau de jeu
+        for i in range(5):
+            for j in range(5):
+                # Teste si la position courante est occupée
+                if self.plateau[j][i] == self.tour:
+                    moves = self.mouvementPossible(j, i)
+
+                    # On parcoure les mouvements possibles
+                    for m in moves:
+                        # On déplace le pion
+                        self.plateau[m[0]][m[1]] = self.tour
+                        # On enlève le pion à l'emplacement précédent
+                        self.plateau[j][i] = 0
+                        self.changeTour()
+
+                        val = self.minDeplace(p - 1)
+
+                        # p pair, alors on fait un max
+                        if v < val:
+                            v = val
+                            self.pion = [j, i]
+                            coup = m
+
+                        # On annule le coup effectué
+                        self.changeTour()
+                        self.plateau[m[0]][m[1]] = 0
+                        self.plateau[j][i] = self.tour
+
+        # On déplace le pion au meilleur emplacement
+        self.deplacePion(coup[0], coup[1])
+
+    def minMax(self, p):
+        self.IAenCours = True
+        if self.pose > 0:
+            self.minMaxPose(p)
+        else:
+            self.minMaxDeplace(p)
+        self.IAenCours = False

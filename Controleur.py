@@ -1,6 +1,9 @@
-from tkinter import *
+# -*- coding: utf-8 -*-
 from VueJeu import *
 from Model import *
+from random import randint
+
+pMax = 4
 
 class Controleur:
     """ Classe qui gère le passage du menu au jeu et qui gère les différentes actions (clic)
@@ -47,9 +50,22 @@ class Controleur:
                 y = int(y / 82)
                 if x < 5 and y < 5:
                     if self.model.action(x, y):
+                        if self.model.tour == self.model.joueur1 == 1 or (self.model.tour == 2 and self.model.joueur2 == 1):
+                            self.model.minMax(pMax)
+
                         self.vueJeu.affichage()
+
                         if self.model.getGagnant():
                             self.afficheGagnant()
+
+    def iAvsIA(self):
+        x = randint(0,4)
+        y = randint(0,4)
+        self.model.posePion(x, y)
+        while not self.model.gagnant:
+            self.vueJeu.affichage()
+            self.model.minMax(pMax)
+
 
     def afficheGagnant(self):
         self.fenetre_gagnant = Tk()
@@ -69,6 +85,8 @@ class Controleur:
             widget.destroy()
         self.model = Model(self.choix1.get(), self.choix2.get())
         self.vueJeu = VueJeu(self.model, self.frame, self.actionOnMouseEvent)
+        if self.model.joueur1 == self.model.joueur2 == 1:
+            self.iAvsIA()
 
     def creationBarreMenu(self):
         menubar = Menu(self.root)
