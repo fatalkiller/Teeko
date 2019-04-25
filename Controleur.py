@@ -2,6 +2,7 @@
 from VueJeu import *
 from Model import *
 from random import randint
+from MinMax import minMax
 
 pMax = 4
 
@@ -51,7 +52,7 @@ class Controleur:
                 if x < 5 and y < 5:
                     if self.model.action(x, y):
                         if self.model.tour == self.model.joueur1 == 1 or (self.model.tour == 2 and self.model.joueur2 == 1):
-                            self.model.minMax(pMax)
+                            minMax(self.model, pMax)
 
                         self.vueJeu.affichage()
 
@@ -59,13 +60,12 @@ class Controleur:
                             self.afficheGagnant()
 
     def iAvsIA(self):
-        x = randint(0,4)
-        y = randint(0,4)
+        x = randint(0, 4)
+        y = randint(0, 4)
         self.model.posePion(x, y)
         while not self.model.gagnant:
             self.vueJeu.affichage()
-            self.model.minMax(pMax)
-
+            minMax(self.model, pMax)
 
     def afficheGagnant(self):
         self.fenetre_gagnant = Tk()
