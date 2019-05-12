@@ -1,5 +1,7 @@
+
 def eval(model):
     return 0
+
 
 def minPose(model, p, alpha, beta):
     # Teste si on doit poser ou déplacer un pion
