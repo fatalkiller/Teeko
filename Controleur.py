@@ -94,11 +94,13 @@ class Controleur:
                             self.afficheGagnant()
 
     def iAvsIA(self):
+        # Pose un premier pion aléatoirement
         x = randint(0, 4)
         y = randint(0, 4)
         self.model.posePion(x, y)
+
+        # Joue tant qu'il n'y a pas de gagnant
         while not self.model.gagnant:
-            self.vueJeu.affichage()
             if elagage:
                 functarget = AlphaBeta.minMax
 
@@ -112,6 +114,8 @@ class Controleur:
 
             # Attendre que l'IA joue...
             t.join()
+
+            self.vueJeu.affichage()
 
     def afficheGagnant(self):
         self.fenetre_gagnant = Tk()
