@@ -74,14 +74,14 @@ class Controleur:
                             self.enableclick = False
 
                             if elagage:
-                                functarger = AlphaBeta.minMax
+                                functarget = AlphaBeta.minMax
 
                             else:
-                                functarger = MinMax.minMax
+                                functarget = MinMax.minMax
 
                             # Lance calcul de l'ia dans un thread
                             t = threading.Thread(
-                                target=functarger, args=(self.model, pMax))
+                                target=functarget, args=(self.model, pMax))
                             t.start()
 
                             # Attendre que l'IA joue...
@@ -100,9 +100,18 @@ class Controleur:
         while not self.model.gagnant:
             self.vueJeu.affichage()
             if elagage:
-                AlphaBeta.minMax(self.model, pMax)
+                functarget = AlphaBeta.minMax
+
             else:
-                MinMax.minMax(self.model, pMax)
+                functarget = MinMax.minMax
+
+            # Lance calcul de l'ia dans un thread
+            t = threading.Thread(
+                target=functarget, args=(self.model, pMax))
+            t.start()
+
+            # Attendre que l'IA joue...
+            t.join()
 
     def afficheGagnant(self):
         self.fenetre_gagnant = Tk()
