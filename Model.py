@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class Model:
     """ Classe principal du jeu
     - plateau : int[][]
@@ -14,6 +15,9 @@ class Model:
     - gagnant : boolean, vrai si un joueur a gagné
     - IAenCours : boolean, vrai si l'IA est en cours de calcul
     """
+
+    TYPE_JOUEUR = 0     # Joueur humain
+    TYPE_IA = 1         # Joueur IA
 
     def __init__(self, j1, j2):
         self.plateau = []
@@ -118,7 +122,7 @@ class Model:
         return False
 
     def supprimeDeplacement(self):
-        for i in range(5) :
+        for i in range(5):
             for j in range(5):
                 if self.plateau[i][j] == 3:
                     self.plateau[i][j] = 0
