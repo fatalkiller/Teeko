@@ -23,7 +23,7 @@ def minPose(model, p, alpha, beta):
         for j in range(5):
             # Test si plateau[j][i] déjà pris
             # On pose le pion à l'endroit souhaité
-            if model.posePion(j, i):
+            if model.pose_pion(j, i):
                 val = maxPose(model, p - 1, alpha, beta)
 
                 # p impair, alors on fait un min
@@ -31,7 +31,7 @@ def minPose(model, p, alpha, beta):
 
                 # On annule le coup effectué
                 model.plateau[j][i] = 0
-                model.changeTour()
+                model.change_tour()
                 model.pose += 1
 
                 # Arrêter la recherche dans cette branche
@@ -64,7 +64,7 @@ def maxPose(model, p, alpha, beta):
         for j in range(5):
             # Test si plateau[j][i] déjà pris
             # On pose le pion à l'endroit souhaité
-            if model.posePion(j, i):
+            if model.pose_pion(j, i):
                 val = minPose(model, p - 1, alpha, beta)
 
                 # p pair, alors on fait un max
@@ -72,7 +72,7 @@ def maxPose(model, p, alpha, beta):
 
                 # On annule le coup effectué
                 model.plateau[j][i] = 0
-                model.changeTour()
+                model.change_tour()
                 model.pose += 1
 
                 # Arrêter la recherche dans cette branche
@@ -109,7 +109,7 @@ def minDeplace(model, p, alpha, beta):
                     model.plateau[m[0]][m[1]] = model.tour
                     # On enlève le pion à l'emplacement précédent
                     model.plateau[j][i] = 0
-                    model.changeTour()
+                    model.change_tour()
 
                     val = maxDeplace(model, p - 1, alpha, beta)
 
@@ -117,7 +117,7 @@ def minDeplace(model, p, alpha, beta):
                     v = min(v, val)
 
                     # On annule le coup effectué
-                    model.changeTour()
+                    model.change_tour()
                     model.plateau[m[0]][m[1]] = 0
                     model.plateau[j][i] = model.tour
 
@@ -155,7 +155,7 @@ def maxDeplace(model, p, alpha, beta):
                     model.plateau[m[0]][m[1]] = model.tour
                     # On enlève le pion à l'emplacement précédent
                     model.plateau[j][i] = 0
-                    model.changeTour()
+                    model.change_tour()
 
                     val = minDeplace(model, p - 1, alpha, beta)
 
@@ -163,7 +163,7 @@ def maxDeplace(model, p, alpha, beta):
                     v = max(v, val)
 
                     # On annule le coup effectué
-                    model.changeTour()
+                    model.change_tour()
                     model.plateau[m[0]][m[1]] = 0
                     model.plateau[j][i] = model.tour
 
@@ -189,7 +189,7 @@ def minMaxPose(model, p, alpha, beta):
         for j in range(5):
             # Test si plateau[j][i] déjà pris
             # On pose le pion à l'endroit souhaité
-            if model.posePion(j, i):
+            if model.pose_pion(j, i):
                 val = minPose(model, p - 1, alpha, beta)
 
                 # p pair, alors on fait un max
@@ -199,14 +199,14 @@ def minMaxPose(model, p, alpha, beta):
 
                 # On annule le coup effectué
                 model.plateau[j][i] = 0
-                model.changeTour()
+                model.change_tour()
                 model.pose += 1
 
                 # Diminue alpha pour accélerer la recherche du min
                 alpha = max(alpha, v)
 
     # On pose le pion au meilleur emplacement
-    model.posePion(coup[0], coup[1])
+    model.pose_pion(coup[0], coup[1])
 
 
 def minMaxDeplace(model, p, alpha, beta):
@@ -229,7 +229,7 @@ def minMaxDeplace(model, p, alpha, beta):
                     model.plateau[m[0]][m[1]] = model.tour
                     # On enlève le pion à l'emplacement précédent
                     model.plateau[j][i] = 0
-                    model.changeTour()
+                    model.change_tour()
 
                     val = minDeplace(model, p - 1, alpha, beta)
 
@@ -240,7 +240,7 @@ def minMaxDeplace(model, p, alpha, beta):
                         coup = m
 
                     # On annule le coup effectué
-                    model.changeTour()
+                    model.change_tour()
                     model.plateau[m[0]][m[1]] = 0
                     model.plateau[j][i] = model.tour
 
@@ -248,7 +248,7 @@ def minMaxDeplace(model, p, alpha, beta):
                     alpha = max(alpha, v)
 
     # On déplace le pion au meilleur emplacement
-    model.deplacePion(coup[0], coup[1])
+    model.deplace_pion(coup[0], coup[1])
 
 
 def minMax(model, p):
