@@ -5,12 +5,8 @@ from random import randint
 import MinMax
 import AlphaBeta
 import threading
-from time import sleep
-
-# Profondeur maximale de recherche de minMax
-pMax = 6
-# Elagage Alpha-Beta
-elagage = True
+import os
+import parameters
 
 
 class Controleur:
@@ -22,7 +18,7 @@ class Controleur:
     - vueJeu : contient l'interface graphique de la partie en cours
     """
 
-    enableclick = True
+    enable_click = True
 
     def __init__(self):
         self.root = Tk()
@@ -30,50 +26,49 @@ class Controleur:
         self.root.resizable(0, 0)
         self.root.geometry("500x500")
         self.frame = Frame(self.root, width=500, height=500, borderwidth=1)
-        self.creationBarreMenu()
-        self.creationMenu()
+        self.creation_barre_menu()
+        self.creation_menu()
         self.root.mainloop()
 
-    def creationMenu(self):
+    def creation_menu(self):
         # TODO : modifié le menu (agencement + liste de niveau d'IA)
         self.frame.pack(fill=BOTH)
-        self.choix1 = IntVar()
+        self.choix_1 = IntVar()
+        self.choix_2 = IntVar()
         choix_joueur1 = Radiobutton(
-            self.frame, text="Joueur", variable=self.choix1, value=0)
+            self.frame, text="Joueur", variable=self.choix_1, value=0)
         choix_ia1 = Radiobutton(self.frame, text="IA",
-                                variable=self.choix1, value=1)
+                                variable=self.choix_1, value=1)
         choix_joueur1.pack()
         choix_ia1.pack()
-        self.choix2 = IntVar()
         choix_joueur2 = Radiobutton(
-            self.frame, text="Joueur", variable=self.choix2, value=0)
+            self.frame, text="Joueur", variable=self.choix_2, value=0)
         choix_ia2 = Radiobutton(self.frame, text="IA",
-                                variable=self.choix2, value=1)
+                                variable=self.choix_2, value=1)
         choix_joueur2.pack()
         choix_ia2.pack()
         bouton_jouer = Button(self.frame, text="Jouer",
                               command=self.lancementJeu)
         bouton_jouer.pack()
 
-    def actionOnMouseEvent(self, event):
-        if not self.model.getGagnant() and self.enableclick:
+    def action_on_mouse_event(self, event):
+        if not self.model.getGagnant() and self.enable_click:
             x = event.x - 60
             y = event.y - 60
-            # TODO : vérifier si le clic est bien dans le cercle
             if x > 0 and y > 0:
                 x = int(x / 82)
                 y = int(y / 82)
                 if x < 5 and y < 5:
                     if self.model.action(x, y):
                         # Affiche le coup du joueur courant
-                        self.vueJeu.affichage()
+                        self.vue_jeu.affichage()
 
                         # Si c'est au tour de l'ia de jouer
                         if self.model.tour == self.model.joueur1 == self.model.TYPE_IA or (self.model.tour == 2 and self.model.joueur2 == self.model.TYPE_IA):
                             # Désactive click utilisateur pendant que l'ia joue
-                            self.enableclick = False
+                            self.enable_click = False
 
-                            if elagage:
+                            if parameters.elagage:
                                 functarget = AlphaBeta.minMax
 
                             else:
@@ -81,19 +76,19 @@ class Controleur:
 
                             # Lance calcul de l'ia dans un thread
                             t = threading.Thread(
-                                target=functarget, args=(self.model, pMax))
+                                target=functarget, args=(self.model, parameters.pMax))
                             t.start()
 
                             # Attendre que l'IA joue...
                             t.join()
 
-                        self.vueJeu.affichage()
-                        self.enableclick = True
+                        self.vue_jeu.affichage()
+                        self.enable_click = True
 
                         if self.model.getGagnant():
-                            self.afficheGagnant()
+                            self.affiche_gagnant()
 
-    def iAvsIA(self):
+    def ia_vs_ia(self):
         # Pose un premier pion aléatoirement
         x = randint(0, 4)
         y = randint(0, 4)
@@ -101,7 +96,7 @@ class Controleur:
 
         # Joue tant qu'il n'y a pas de gagnant
         while not self.model.gagnant:
-            if elagage:
+            if parameters.elagage:
                 functarget = AlphaBeta.minMax
 
             else:
@@ -109,15 +104,15 @@ class Controleur:
 
             # Lance calcul de l'ia dans un thread
             t = threading.Thread(
-                target=functarget, args=(self.model, pMax))
+                target=functarget, args=(self.model, parameters.pMax))
             t.start()
 
             # Attendre que l'IA joue...
             t.join()
 
-            self.vueJeu.affichage()
+            self.vue_jeu.affichage()
 
-    def afficheGagnant(self):
+    def affiche_gagnant(self):
         self.fenetre_gagnant = Tk()
         self.fenetre_gagnant.title('Fin partie')
         self.fenetre_gagnant.geometry("200x100")
@@ -129,17 +124,25 @@ class Controleur:
     def relanceMenu(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
-        self.creationMenu()
+        self.creation_menu()
 
     def lancementJeu(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
-        self.model = Model(self.choix1.get(), self.choix2.get())
-        self.vueJeu = VueJeu(self.model, self.frame, self.actionOnMouseEvent)
+        self.model = Model(self.choix_1.get(), self.choix_2.get())
+        # Si combat IA vs IA, alors lancer le jeu dans une console
         if self.model.joueur1 == self.model.joueur2 == self.model.TYPE_IA:
-            self.iAvsIA()
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            # os.path.join(dir_path, 'VueConsole.py')
+            os.system('start /B start cmd.exe @cmd /k python ' +
+                      dir_path + "\VueConsole.py")
+            # self.iAvsIA()
+        # Sinon, lancer le GUI du jeu
+        else:
+            self.vue_jeu = VueJeu(self.model, self.frame,
+                                  self.action_on_mouse_event)
 
-    def creationBarreMenu(self):
+    def creation_barre_menu(self):
         menubar = Menu(self.root)
         self.root.config(menu=menubar)
         menubar.add_command(label="Rejouer", command=self.relanceMenu)
