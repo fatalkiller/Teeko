@@ -23,7 +23,7 @@ class VueJeu:
 
         for x in range(5):
             for y in range(5):
-                val = self.model.getCaseValue(x, y)
+                val = self.model.get_case_value(x, y)
                 if val == 1:
                     self.canvas.create_oval(
                         65 + x * 82, 65 + y * 82, 105 + x * 82, 105 + y * 82, fill='red')

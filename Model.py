@@ -33,23 +33,23 @@ class Model:
         self.gagnant = False
         self.IAenCours = False
 
-    def changeTour(self):
-        self.verifGagnant()
+    def change_tour(self):
+        self.verif_gagnant()
         if self.IAenCours or not self.gagnant:
             if self.tour == 1:
                 self.tour = 2
             else:
                 self.tour = 1
 
-    def posePion(self, x, y):
+    def pose_pion(self, x, y):
         if self.plateau[x][y] == 0:
             self.plateau[x][y] = self.tour
-            self.changeTour()
+            self.change_tour()
             self.pose -= 1
             return True
         return False
 
-    def mouvementPossible(self, x, y):
+    def mouvement_possible(self, x, y):
         p = self.plateau
         deplacements = []
         if x > 0 and y > 0 and p[x - 1][y - 1] == 0:
@@ -70,28 +70,28 @@ class Model:
             deplacements.append([x-1, y])
         return deplacements
 
-    def addMouvementPossible(self, x, y):
+    def add_mouvement_possible(self, x, y):
         if self.plateau[x][y] == self.tour:
-            self.supprimeDeplacement()
+            self.supprime_deplacement()
             self.pion = [x, y]
-            deplacements = self.mouvementPossible(x, y)
+            deplacements = self.mouvement_possible(x, y)
             for d in deplacements:
                 self.plateau[d[0]][d[1]] = 3
             return True
         return False
 
-    def deplacePion(self, x, y):
+    def deplace_pion(self, x, y):
         if self.plateau[x][y] == 3 or self.IAenCours:
             self.plateau[x][y] = self.tour
             self.plateau[self.pion[0]][self.pion[1]] = 0
-            self.supprimeDeplacement()
+            self.supprime_deplacement()
             self.pion = [-1, -1]
             self.IAenCours = False
-            self.changeTour()
+            self.change_tour()
             return True
         return False
 
-    def verifGagnant(self):
+    def verif_gagnant(self):
         p = self.plateau
         t = self.tour
         for j in range(5):
@@ -109,26 +109,26 @@ class Model:
                         self.gagnant = True
                     return
 
-    def getCaseValue(self, x, y):
+    def get_case_value(self, x, y):
         return self.plateau[x][y]
 
     def action(self, x, y):
         if self.pose:
-            return self.posePion(x, y)
-        elif self.addMouvementPossible(x, y):
+            return self.pose_pion(x, y)
+        elif self.add_mouvement_possible(x, y):
             return True
         elif self.pion != [-1, -1]:
-            return self.deplacePion(x, y)
+            return self.deplace_pion(x, y)
         return False
 
-    def supprimeDeplacement(self):
+    def supprime_deplacement(self):
         for i in range(5):
             for j in range(5):
                 if self.plateau[i][j] == 3:
                     self.plateau[i][j] = 0
 
-    def getTour(self):
+    def get_tour(self):
         return self.tour
 
-    def getGagnant(self):
+    def get_gagnant(self):
         return self.gagnant

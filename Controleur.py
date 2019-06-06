@@ -48,11 +48,11 @@ class Controleur:
         choix_joueur2.pack()
         choix_ia2.pack()
         bouton_jouer = Button(self.frame, text="Jouer",
-                              command=self.lancementJeu)
+                              command=self.lancement_jeu)
         bouton_jouer.pack()
 
     def action_on_mouse_event(self, event):
-        if not self.model.getGagnant() and self.enable_click:
+        if not self.model.get_gagnant() and self.enable_click:
             x = event.x - 60
             y = event.y - 60
             if x > 0 and y > 0:
@@ -69,10 +69,10 @@ class Controleur:
                             self.enable_click = False
 
                             if parameters.elagage:
-                                functarget = AlphaBeta.minMax
+                                functarget = AlphaBeta.min_max
 
                             else:
-                                functarget = MinMax.minMax
+                                functarget = MinMax.min_max
 
                             # Lance calcul de l'ia dans un thread
                             t = threading.Thread(
@@ -85,22 +85,22 @@ class Controleur:
                         self.vue_jeu.affichage()
                         self.enable_click = True
 
-                        if self.model.getGagnant():
+                        if self.model.get_gagnant():
                             self.affiche_gagnant()
 
     def ia_vs_ia(self):
         # Pose un premier pion aléatoirement
         x = randint(0, 4)
         y = randint(0, 4)
-        self.model.posePion(x, y)
+        self.model.pose_pion(x, y)
 
         # Joue tant qu'il n'y a pas de gagnant
         while not self.model.gagnant:
             if parameters.elagage:
-                functarget = AlphaBeta.minMax
+                functarget = AlphaBeta.min_max
 
             else:
-                functarget = MinMax.minMax
+                functarget = MinMax.min_max
 
             # Lance calcul de l'ia dans un thread
             t = threading.Thread(
@@ -117,16 +117,16 @@ class Controleur:
         self.fenetre_gagnant.title('Fin partie')
         self.fenetre_gagnant.geometry("200x100")
         champ_label = Label(self.fenetre_gagnant, text="Le joueur n°" +
-                            str(self.model.getTour()) + " a gagné !")
+                                                       str(self.model.get_tour()) + " a gagné !")
         champ_label.pack()
         self.fenetre_gagnant.mainloop()
 
-    def relanceMenu(self):
+    def relance_menu(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
         self.creation_menu()
 
-    def lancementJeu(self):
+    def lancement_jeu(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
         self.model = Model(self.choix_1.get(), self.choix_2.get())
@@ -145,4 +145,4 @@ class Controleur:
     def creation_barre_menu(self):
         menubar = Menu(self.root)
         self.root.config(menu=menubar)
-        menubar.add_command(label="Rejouer", command=self.relanceMenu)
+        menubar.add_command(label="Rejouer", command=self.relance_menu)

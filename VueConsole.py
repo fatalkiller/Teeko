@@ -117,10 +117,10 @@ class VueConsole:
         # Joue tant qu'il n'y a pas de gagnant
         while not self.model.gagnant:
             if parameters.elagage:
-                functarget = AlphaBeta.minMax
+                functarget = AlphaBeta.min_max
 
             else:
-                functarget = MinMax.minMax
+                functarget = MinMax.min_max
 
             # Lance calcul de l'ia dans un thread
             t = threading.Thread(
