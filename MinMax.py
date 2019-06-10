@@ -1,5 +1,5 @@
-def eval(model):
-    return 0
+from Eval import evaluation
+
 
 def min_pose(model, p):
     # Teste si on doit poser ou déplacer un pion
@@ -11,7 +11,7 @@ def min_pose(model, p):
         model.gagnant = False
         return 100 + p
     if p == 0:
-        return eval(model)
+        return evaluation(model)
 
     # Init v pour un min
     v = 1000
@@ -44,7 +44,7 @@ def max_pose(model, p):
         model.gagnant = False
         return -100 - p
     if p == 0:
-        return eval(model)
+        return evaluation(model)
 
     # Init v pour un max
     v = -1000
@@ -73,7 +73,7 @@ def min_deplace(model, p):
         model.gagnant = False
         return 100 + p
     if p == 0:
-        return eval(model)
+        return evaluation(model)
 
     # Init v pour un min
     v = 1000
@@ -111,7 +111,7 @@ def max_deplace(model, p):
         model.gagnant = False
         return -100 - p
     if p == 0:
-        return eval(model)
+        return evaluation(model)
 
     # Init v pour un max
     v = -1000
