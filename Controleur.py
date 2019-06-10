@@ -25,7 +25,7 @@ class Controleur:
         self.root.title("Teeko")
         self.root.resizable(0, 0)
         self.root.geometry("500x500")
-        self.frame = Frame(self.root, width=500, height=500, borderwidth=1)
+        self.frame = Frame(self.root, width=500, height=550, borderwidth=1)
         self.creation_barre_menu()
         self.creation_menu()
         self.root.mainloop()
@@ -141,6 +141,7 @@ class Controleur:
         else:
             self.vue_jeu = VueJeu(self.model, self.frame,
                                   self.action_on_mouse_event)
+            self.vue_jeu.update_status_label()
 
     def creation_barre_menu(self):
         menubar = Menu(self.root)
