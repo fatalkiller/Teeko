@@ -1,14 +1,17 @@
-def min_pose(model, p):
+def min_pose(model, p, eval_enable):
     # Teste si on doit poser ou déplacer un pion
     if model.pose == 0:
-        return min_deplace(model, p)
+        return min_deplace(model, p, eval_enable)
 
     # Vérif noeud terminal
     if model.gagnant:
         model.gagnant = False
         return 100 + p
     if p == 0:
-        return model.evaluation()
+        if eval_enable:
+            return model.evaluation()
+        else:
+            return 0
 
     # Init v pour un min
     v = 1000
@@ -19,7 +22,7 @@ def min_pose(model, p):
             # Test si plateau[j][i] déjà pris
             # On pose le pion à l'endroit souhaité
             if model.pose_pion(j, i):
-                val = max_pose(model, p - 1)
+                val = max_pose(model, p - 1, eval_enable)
 
                 # p impair, alors on fait un min
                 v = min(v, val)
@@ -31,17 +34,20 @@ def min_pose(model, p):
     return v
 
 
-def max_pose(model, p):
+def max_pose(model, p, eval_enable):
     # Teste si on doit poser ou déplacer un pion
     if model.pose == 0:
-        return max_deplace(model, p)
+        return max_deplace(model, p, eval_enable)
 
     # Vérif noeud terminal
     if model.gagnant:
         model.gagnant = False
         return -100 - p
     if p == 0:
-        return model.evaluation()
+        if eval_enable:
+            return model.evaluation()
+        else:
+            return 0
 
     # Init v pour un max
     v = -1000
@@ -52,7 +58,7 @@ def max_pose(model, p):
             # Test si plateau[j][i] déjà pris
             # On pose le pion à l'endroit souhaité
             if model.pose_pion(j, i):
-                val = min_pose(model, p - 1)
+                val = min_pose(model, p - 1, eval_enable)
 
                 # p pair, alors on fait un max
                 v = max(v, val)
@@ -64,13 +70,16 @@ def max_pose(model, p):
     return v
 
 
-def min_deplace(model, p):
+def min_deplace(model, p, eval_enable):
     # Vérif noeud terminal
     if model.gagnant:
         model.gagnant = False
         return 100 + p
     if p == 0:
-        return model.evaluation()
+        if eval_enable:
+            return model.evaluation()
+        else:
+            return 0
 
     # Init v pour un min
     v = 1000
@@ -90,7 +99,7 @@ def min_deplace(model, p):
                     model.plateau[j][i] = 0
                     model.change_tour()
 
-                    val = max_deplace(model, p - 1)
+                    val = max_deplace(model, p - 1, eval_enable)
 
                     # p impair, alors on fait un min
                     v = min(v, val)
@@ -102,13 +111,16 @@ def min_deplace(model, p):
     return v
 
 
-def max_deplace(model, p):
+def max_deplace(model, p, eval_enable):
     # Vérif noeud terminal
     if model.gagnant:
         model.gagnant = False
         return -100 - p
     if p == 0:
-        return model.evaluation()
+        if eval_enable:
+            return model.evaluation()
+        else:
+            return 0
 
     # Init v pour un max
     v = -1000
@@ -128,7 +140,7 @@ def max_deplace(model, p):
                     model.plateau[j][i] = 0
                     model.change_tour()
 
-                    val = min_deplace(model, p - 1)
+                    val = min_deplace(model, p - 1, eval_enable)
 
                     # p pair, alors on fait un max
                     v = max(v, val)
@@ -140,7 +152,7 @@ def max_deplace(model, p):
     return v
 
 
-def min_max_pose(model, p):
+def min_max_pose(model, p, eval_enable):
     # Init du coup retourné
     coup = []
 
@@ -153,7 +165,7 @@ def min_max_pose(model, p):
             # Test si plateau[j][i] déjà pris
             # On pose le pion à l'endroit souhaité
             if model.pose_pion(j, i):
-                val = min_pose(model, p - 1)
+                val = min_pose(model, p - 1, eval_enable)
 
                 # p pair, alors on fait un max
                 if v < val:
@@ -169,7 +181,7 @@ def min_max_pose(model, p):
     model.pose_pion(coup[0], coup[1])
 
 
-def min_max_deplace(model, p):
+def min_max_deplace(model, p, eval_enable):
     # Init du coup retourné
     coup = []
 
@@ -191,7 +203,7 @@ def min_max_deplace(model, p):
                     model.plateau[j][i] = 0
                     model.change_tour()
 
-                    val = min_deplace(model, p - 1)
+                    val = min_deplace(model, p - 1, eval_enable)
 
                     # p pair, alors on fait un max
                     if v < val:
@@ -208,10 +220,10 @@ def min_max_deplace(model, p):
     model.deplace_pion(coup[0], coup[1])
 
 
-def min_max(model, p):
+def min_max(model, p, eval_enable):
     model.ia_en_cours = model.tour
     if model.pose > 0:
-        min_max_pose(model, p)
+        min_max_pose(model, p, eval_enable)
     else:
-        min_max_deplace(model, p)
+        min_max_deplace(model, p, eval_enable)
     model.ia_en_cours = 0
