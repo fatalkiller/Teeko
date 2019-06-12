@@ -44,9 +44,13 @@ class VueJeu:
     def update_status_label(self):
         if self.model.tour == 1 and self.model.joueur1 == self.model.TYPE_IA:
             self.labelText.set("C'est au tour de l'IA Rouge")
+            self.label.config(fg="red")
         elif self.model.tour == 2 and self.model.joueur2 == self.model.TYPE_IA:
             self.labelText.set("C'est au tour de l'IA Noire")
+            self.label.config(fg="black")
         elif self.model.tour == 1:
             self.labelText.set("C'est au tour du Joueur Rouge")
+            self.label.config(fg="red")
         else:
             self.labelText.set("C'est au tour du Joueur Noir")
+            self.label.config(fg="black")
