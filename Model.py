@@ -13,6 +13,8 @@ class Model:
     - pion : int[2] contient les coordonnées du dernier pion
     - joueur1 : Joueur // pour le moment 0 -> joueur et 1 -> IA
     - joueur2 : Joueur
+    - pMax_ias : int[2] -> pMax_ias[1] = pMax de l'ia 1, pMax_ias[2] = pMax de l'ia 2
+    - eval_ias : int[2] -> eval_ias[1] = pMax de l'ia 1, eval_ias[2] = pMax de l'ia 2
     - gagnant : boolean, vrai si un joueur a gagné
     - ia_en_cours : int -> 0 si pas d'ia en cours, 1 si ia1 (joueur1), 2 si ia2 (joueur2)
     """
@@ -33,6 +35,8 @@ class Model:
         self.joueur2 = j2
         self.gagnant = False
         self.ia_en_cours = 0
+        self.pMax_ias = [0] * 3
+        self.eval_ias = [0] * 3
 
     def change_tour(self):
         self.verif_gagnant()
