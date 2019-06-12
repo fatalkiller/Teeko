@@ -1,5 +1,3 @@
-# Profondeur maximale de recherche de minMax
-pMax = 4
 # Elagage Alpha-Beta
 elagage = True
 
@@ -12,3 +10,15 @@ tabScore = [
     [6, 10, 10, 10, 6],
     [4, 6, 5, 6, 4]
 ]
+
+# Tableau des niveaux d'IA
+#[Niveau_IA, profondeur_max, evaluation_enable]
+tabLevels = [
+    [1, 1, 0],
+    [2, 3, 0],
+    [3, 3, 1],
+    [4, 5, 0],
+    [5, 5, 1],
+]
+# pMax = tabLevels[n][1]
+# eval = tabLevels[n][2]
