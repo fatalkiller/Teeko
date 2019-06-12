@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import parameters
 
+
 class Model:
     """ Classe principal du jeu
     - plateau : int[][]
@@ -13,7 +14,7 @@ class Model:
     - joueur1 : Joueur // pour le moment 0 -> joueur et 1 -> IA
     - joueur2 : Joueur
     - gagnant : boolean, vrai si un joueur a gagné
-    - IAenCours : boolean, vrai si l'IA est en cours de calcul
+    - ia_en_cours : int -> 0 si pas d'ia en cours, 1 si ia1 (joueur1), 2 si ia2 (joueur2)
     """
 
     TYPE_JOUEUR = 0     # Joueur humain
@@ -134,19 +135,12 @@ class Model:
         return self.gagnant
 
     def evaluation(self):
-        tabScore = [
-            [4,6,5,6,4],
-            [6,10,10,10,6],
-            [5,10,12,10,5],
-            [6,10,10,10,6],
-            [4,6,5,6,4]
-        ]
         score = 0
         for i in range(5):
             for j in range(5):
                 if self.plateau[i][j] != 0:
                     if self.plateau[i][j] == self.ia_en_cours:
-                        score += tabScore[i][j]
+                        score += parameters.tabScore[i][j]
                     else:
-                        score -= tabScore[i][j]
+                        score -= parameters.tabScore[i][j]
         return score
