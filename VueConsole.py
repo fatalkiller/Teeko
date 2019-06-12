@@ -3,6 +3,7 @@ import MinMax
 import AlphaBeta
 import parameters
 import threading
+import sys
 from random import randint
 from time import sleep
 
@@ -118,13 +119,15 @@ class VueConsole:
         while not self.model.gagnant:
             if parameters.elagage:
                 functarget = AlphaBeta.min_max
-
             else:
                 functarget = MinMax.min_max
 
+            pMax = self.model.pMax_ias[self.model.tour]
+            eval_enable = self.model.eval_ias[self.model.tour]
+
             # Lance calcul de l'ia dans un thread
             t = threading.Thread(
-                target=functarget, args=(self.model, parameters.pMax))
+                target=functarget, args=(self.model, pMax, eval_enable))
             t.start()
 
             # Attendre que l'IA joue...
@@ -136,5 +139,11 @@ class VueConsole:
 
 
 # Lancer le combat d'ia
-game = VueConsole(Model(1, 1))
+model = Model(1, 1)
+model.pMax_ias[1] = int(sys.argv[1])  # pMax j1
+model.eval_ias[1] = int(sys.argv[2])  # eval j1
+model.pMax_ias[2] = int(sys.argv[3])  # pMax j2
+model.eval_ias[2] = int(sys.argv[4])  # eval j2
+
+game = VueConsole(model)
 game.ia_vs_ia()
