@@ -6,7 +6,6 @@ import MinMax
 import AlphaBeta
 import threading
 import os
-import parameters
 
 
 class Controleur:

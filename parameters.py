@@ -1,4 +1,4 @@
 # Profondeur maximale de recherche de minMax
-pMax = 6
+pMax = 4
 # Elagage Alpha-Beta
 elagage = True

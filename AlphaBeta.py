@@ -1,6 +1,3 @@
-from Eval import evaluation
-
-
 def min_pose(model, p, alpha, beta):
     # Teste si on doit poser ou déplacer un pion
     if model.pose == 0:
@@ -11,7 +8,7 @@ def min_pose(model, p, alpha, beta):
         model.gagnant = False
         return 100 + p
     if p == 0:
-        return evaluation(model)
+        return model.evaluation()
 
     # Init v pour un min
     v = 1000
@@ -52,7 +49,7 @@ def max_pose(model, p, alpha, beta):
         model.gagnant = False
         return -100 - p
     if p == 0:
-        return evaluation(model)
+        return model.evaluation()
 
     # Init v pour un max
     v = -1000
@@ -89,7 +86,7 @@ def min_deplace(model, p, alpha, beta):
         model.gagnant = False
         return 100 + p
     if p == 0:
-        return evaluation(model)
+        return model.evaluation()
 
     # Init v pour un min
     v = 1000
@@ -135,7 +132,7 @@ def max_deplace(model, p, alpha, beta):
         model.gagnant = False
         return -100 - p
     if p == 0:
-        return evaluation(model)
+        return model.evaluation()
 
     # Init v pour un max
     v = -1000
@@ -189,7 +186,6 @@ def min_max_pose(model, p, alpha, beta):
             # On pose le pion à l'endroit souhaité
             if model.pose_pion(j, i):
                 val = min_pose(model, p - 1, alpha, beta)
-
                 # p pair, alors on fait un max
                 if v < val:
                     v = val
@@ -254,9 +250,9 @@ def min_max(model, p):
     alpha = -1000
     beta = 1000
 
-    model.IAenCours = True
+    model.ia_en_cours = model.tour
     if model.pose > 0:
         min_max_pose(model, p, alpha, beta)
     else:
         min_max_deplace(model, p, alpha, beta)
-    model.IAenCours = False
+    model.ia_en_cours = 0

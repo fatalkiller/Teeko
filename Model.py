@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import parameters
 
 class Model:
     """ Classe principal du jeu
@@ -31,11 +31,11 @@ class Model:
         self.joueur1 = j1
         self.joueur2 = j2
         self.gagnant = False
-        self.IAenCours = False
+        self.ia_en_cours = 0
 
     def change_tour(self):
         self.verif_gagnant()
-        if self.IAenCours or not self.gagnant:
+        if self.ia_en_cours != 0 or not self.gagnant:
             if self.tour == 1:
                 self.tour = 2
             else:
@@ -81,12 +81,12 @@ class Model:
         return False
 
     def deplace_pion(self, x, y):
-        if self.plateau[x][y] == 3 or self.IAenCours:
+        if self.plateau[x][y] == 3 or self.ia_en_cours != 0:
             self.plateau[x][y] = self.tour
             self.plateau[self.pion[0]][self.pion[1]] = 0
             self.supprime_deplacement()
             self.pion = [-1, -1]
-            self.IAenCours = False
+            self.ia_en_cours = 0
             self.change_tour()
             return True
         return False
@@ -132,3 +132,21 @@ class Model:
 
     def get_gagnant(self):
         return self.gagnant
+
+    def evaluation(self):
+        tabScore = [
+            [4,6,5,6,4],
+            [6,10,10,10,6],
+            [5,10,12,10,5],
+            [6,10,10,10,6],
+            [4,6,5,6,4]
+        ]
+        score = 0
+        for i in range(5):
+            for j in range(5):
+                if self.plateau[i][j] != 0:
+                    if self.plateau[i][j] == self.ia_en_cours:
+                        score += tabScore[i][j]
+                    else:
+                        score -= tabScore[i][j]
+        return score
